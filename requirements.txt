@@ -15,7 +15,6 @@ Pillow>=12.1.0                # Image analysis (images)
 # === Optional — install as needed ===
 # playwright>=1.56.0          # Browser automation (internal-links, seo-agi)
 #                              # Also run: playwright install
-# reportlab>=4.0               # PDF report generation (geo-report --pdf)
 # textstat>=0.7.0              # Readability scoring (readability)
 # networkx>=3.0                # Link graph analysis (link-graph)
 # rapidfuzz>=3.0.0             # Fuzzy string matching (product-titles, ecom-taxonomy)

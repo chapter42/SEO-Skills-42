@@ -56,7 +56,7 @@ Skills die meerdere bronnen combineren met `--seo` / `--geo` mode flags.
 | [42:technical](42-technical/) | `/42:technical <url>` | 10-categorie technische audit: crawlability, indexability, security, URL structure, mobile, CWV, SSR, page speed, structured data, IndexNow. |
 | [42:content](42-content/) | `/42:content <url>` | E-E-A-T scoring + keyword optimalisatie (SEO) + passage architectuur en citability (GEO) + topical authority. |
 | [42:structured-data](42-structured-data/) | `/42:structured-data <url>` | Schema.org detectie, validatie, scoring (0-100), JSON-LD generatie. `--blog` mode voor kant-en-klare @graph. |
-| [42:geo-report](42-geo-report/) | `/42:geo-report <url>` | Client-ready GEO rapport. `--pdf` voor professionele PDF met charts via ReportLab. |
+| [42:geo-report](skills/42-geo-report/) | `/42:geo-report <url>` | Client-ready GEO rapport in markdown. |
 
 ### SEO Specialists
 
@@ -167,7 +167,6 @@ Optioneel:
 | Package | Waarvoor |
 |---------|----------|
 | `playwright` | Browser automation (internal-links, seo-agi) |
-| `reportlab` | PDF report generatie (geo-report --pdf) |
 | `textstat` | Readability scoring (readability) |
 | `networkx` | Link graph analyse (link-graph) |
 | `rapidfuzz` | Fuzzy matching (product-titles, ecom-taxonomy) |
@@ -285,8 +284,9 @@ Specialisten (48)       42:citability, 42:crawlers, 42:striking-distance, ...
 
 ### v1.1.0 (2026-03-30)
 
-**Package management**
+**Package management & repo reorganisatie**
 
+- Alle 54 skill directories verplaatst naar `skills/` subfolder
 - `manage.sh` — install/uninstall/status/check script voor skill lifecycle
   - `install` symlinkt alle skills naar `~/.claude/skills/` met manifest tracking
   - `uninstall` verwijdert clean via manifest (of fallback scan)
@@ -296,6 +296,10 @@ Specialisten (48)       42:citability, 42:crawlers, 42:striking-distance, ...
 - Automatische shared references: skills zonder eigen `references/` krijgen symlink naar root `references/`
 - `CLAUDE.md` met architectuurbeslissingen en conventies
 - `.installed` manifest in `.gitignore`
+- PDF report generatie verwijderd (42-geo-report) — alles is nu markdown-only
+  - `generate_pdf_report.py` verwijderd
+  - `reportlab` uit optional dependencies
+  - `--pdf` flag en bijbehorende documentatie verwijderd
 
 ### v1.0.0 (2026-03-30)
 

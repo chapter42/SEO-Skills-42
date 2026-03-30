@@ -333,7 +333,7 @@ are based on current industry best practices for Generative Engine Optimization.
    ✓ Prospect status updated: Qualified → Proposal
    ✓ Recommended package: STANDARD (€5,000/month) — Score 32/100
 
-   Next: Share the proposal file or run `/geo report-pdf` for a visual version.
+   Next: Share the proposal file with the prospect.
    ```
 
 ## Pricing Recommendation Logic

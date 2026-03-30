@@ -1,9 +1,9 @@
 ---
 name: 42-geo-report
-description: Generate a professional, client-facing GEO report combining all audit results into a single deliverable with scores, findings, and prioritized actions. Supports markdown (default) and PDF output (--pdf flag) with visual score gauges, bar charts, and color-coded tables via ReportLab.
+description: Generate a professional, client-facing GEO report combining all audit results into a single deliverable with scores, findings, and prioritized actions. Output in markdown.
 version: 1.0.0
 author: 42
-tags: [geo, report, pdf, client-deliverable, executive-summary, action-plan, professional]
+tags: [geo, report, client-deliverable, executive-summary, action-plan, professional]
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 ---
 
@@ -15,9 +15,7 @@ Callable as: `/42:geo-report`
 
 This skill aggregates outputs from all GEO audit skills into a single, professional report that can be delivered directly to a client or stakeholder. The report is written for **business owners and marketing leaders**, not developers -- technical findings are translated into business impact and clear action items with priority levels.
 
-**Two output modes:**
-- **Default (Markdown)**: Generates `GEO-CLIENT-REPORT.md` -- a comprehensive, print-ready markdown report
-- **`--pdf` flag**: Generates a polished PDF report with score gauges, bar charts, platform readiness visualizations, color-coded tables, and prioritized action plans using ReportLab
+**Output**: Generates `GEO-CLIENT-REPORT.md` -- a comprehensive, print-ready markdown report.
 
 ---
 
@@ -36,20 +34,6 @@ This skill aggregates outputs from all GEO audit skills into a single, professio
 3. Calculate the composite GEO Readiness Score
 4. Generate the client report using the template below
 5. Output: `GEO-CLIENT-REPORT.md`
-
-### PDF Report (`--pdf` flag)
-
-When the user runs `/42:geo-report --pdf`:
-
-1. Follow all the same data collection steps as above
-2. Structure audit data into the JSON schema (see PDF Data Schema section below)
-3. Write JSON to a temp file
-4. Run the PDF generation script
-5. Output: `GEO-REPORT-[brand].pdf`
-
-**Prerequisites for PDF generation:**
-- **ReportLab** must be installed: `pip install reportlab`
-- The PDF generation script is located at: `~/.claude/skills/geo/scripts/generate_pdf_report.py`
 
 ---
 
@@ -393,133 +377,6 @@ This GEO audit was conducted using the following methodology:
 
 ---
 
-## PDF Report Generation (`--pdf`)
-
-When the `--pdf` flag is provided, generate a professional PDF instead of (or in addition to) the markdown report.
-
-### PDF Prerequisites
-
-- **ReportLab** must be installed: `pip install reportlab`
-- The PDF generation script is located at: `~/.claude/skills/geo/scripts/generate_pdf_report.py`
-
-### PDF Data Schema
-
-After running a full `/42:audit`, collect all scores, findings, and recommendations into a JSON structure. The JSON data must follow this schema:
-
-```json
-{
-    "url": "https://example.com",
-    "brand_name": "Example Company",
-    "date": "2026-02-18",
-    "geo_score": 65,
-    "scores": {
-        "ai_citability": 62,
-        "brand_authority": 78,
-        "content_eeat": 74,
-        "technical": 72,
-        "schema": 45,
-        "platform_optimization": 59
-    },
-    "platforms": {
-        "Google AI Overviews": 68,
-        "ChatGPT": 62,
-        "Perplexity": 55,
-        "Gemini": 60,
-        "Bing Copilot": 50
-    },
-    "executive_summary": "A 4-6 sentence summary of the audit findings...",
-    "findings": [
-        {
-            "severity": "critical",
-            "title": "Finding Title",
-            "description": "Description of the finding and its impact."
-        }
-    ],
-    "quick_wins": [
-        "Action item 1",
-        "Action item 2"
-    ],
-    "medium_term": [
-        "Action item 1",
-        "Action item 2"
-    ],
-    "strategic": [
-        "Action item 1",
-        "Action item 2"
-    ],
-    "crawler_access": {
-        "GPTBot": {"platform": "ChatGPT", "status": "Allowed", "recommendation": "Keep allowed"},
-        "ClaudeBot": {"platform": "Claude", "status": "Blocked", "recommendation": "Unblock for visibility"}
-    }
-}
-```
-
-### PDF Generation Workflow
-
-1. **Check for existing audit data** -- Look for recent GEO audit reports in the current directory:
-   - `GEO-CLIENT-REPORT.md`
-   - `GEO-AUDIT-REPORT.md`
-   - Or any `GEO-*.md` files from a recent audit
-
-2. **If no audit data exists** -- Tell the user to run `/42:audit <url>` first, then come back for the PDF.
-
-3. **If audit data exists** -- Parse the markdown report to extract:
-   - Overall GEO score
-   - Category scores (citability, brand authority, content/E-E-A-T, technical, schema, platform)
-   - Platform readiness scores (Google AIO, ChatGPT, Perplexity, Gemini, Bing Copilot)
-   - AI crawler access status
-   - Key findings with severity levels
-   - Quick wins, medium-term, and strategic action items
-   - Executive summary
-
-4. **Build the JSON** -- Structure all data into the JSON schema shown above.
-
-5. **Write JSON to temp file** -- Save to `/tmp/geo-audit-data.json`
-
-6. **Run the PDF generator**:
-   ```bash
-   python3 ~/.claude/skills/geo/scripts/generate_pdf_report.py /tmp/geo-audit-data.json "GEO-REPORT-[brand_name].pdf"
-   ```
-
-7. **Report success** -- Tell the user the PDF was generated, its location, and file size.
-
-### Parsing Markdown Audit Data
-
-When extracting data from existing GEO markdown reports, look for these patterns:
-
-- **GEO Score**: Look for "GEO Score: XX/100" or "Overall: XX/100" or "GEO Readiness Score: XX"
-- **Category Scores**: Look for score tables with columns like "Component | Score | Weight"
-- **Platform Scores**: Look for tables with "Google AI Overviews", "ChatGPT", "Perplexity", etc.
-- **Crawler Status**: Look for tables with "Allowed" or "Blocked" status for crawlers like GPTBot, ClaudeBot
-- **Findings**: Look for sections titled "Key Findings", "Critical Issues", "Recommendations"
-- **Action Items**: Look for sections titled "Quick Wins", "Action Plan", "Recommendations"
-
-### PDF Visual Elements
-
-The generated PDF includes:
-- **Cover Page** -- Brand name, URL, date, overall GEO score with visual gauge
-- **Executive Summary** -- Key findings and top recommendations
-- **Score Breakdown** -- Table and bar chart of all 6 scoring categories
-- **AI Platform Readiness** -- Visual horizontal bar chart per platform with scores
-- **AI Crawler Access** -- Color-coded table (green=allowed, red=blocked)
-- **Key Findings** -- Severity-coded findings list (critical/high/medium/low)
-- **Prioritized Action Plan** -- Quick wins, medium-term, and strategic initiatives
-- **Appendix** -- Methodology, data sources, and glossary
-
-### PDF Design Specifications
-
-- **Page size**: US Letter (8.5" x 11")
-- **Color palette**: Navy primary (#1a1a2e), Blue accent (#0f3460), Coral highlight (#e94560), Green success (#00b894)
-- **Page elements**: Header line, page numbers, "Confidential" watermark, generation date
-- **Score gauges**: Traffic-light colors -- green (80+), blue (60-79), yellow (40-59), red (below 40)
-
-### If the User Provides a URL with `--pdf`
-
-If the user runs `/42:geo-report --pdf https://example.com` with a URL:
-1. First run a full audit: invoke `/42:audit` for that URL
-2. Then collect all the audit data from the generated report files
-3. Generate the PDF as described above
-
 ---
 
 ## Formatting and Tone Guidelines
@@ -577,10 +434,3 @@ Generate **GEO-CLIENT-REPORT.md** using the complete 12-section template above, 
 - Self-contained (no references to other report files -- all relevant data is included)
 - Printable and presentable (clean markdown formatting)
 
-### PDF (`--pdf`)
-
-Generate **GEO-REPORT-[brand].pdf** using ReportLab with:
-- All visual elements (gauges, charts, color-coded tables)
-- Professional layout with cover page, headers, page numbers
-- Confidential watermark on each page
-- Same 12-section content structure as the markdown report

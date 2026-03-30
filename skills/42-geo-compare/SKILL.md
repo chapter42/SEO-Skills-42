@@ -304,4 +304,4 @@ fresh audit that weren't visible before. Frame declines as "newly discovered opp
    New issues found: 2 (minor)
    On track for Month 6 target: YES (65/100)
    ```
-3. Suggest next action: "Share with client or run `/geo report-pdf` for a visual version"
+3. Suggest next action: "Share the report with your client"
