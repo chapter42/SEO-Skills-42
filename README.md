@@ -360,29 +360,23 @@ Infrastructure:
 │       ├── similarity.py              # Cosine similarity, clustering, URL boost
 │       └── requirements.txt           # numpy, scipy, google-generativeai
 │
-├── 42-audit/                          # Orchestrator
-│   ├── SKILL.md
-│   ├── requirements.txt
-│   ├── scripts/                       # fetch_page.py, parse_html.py, etc.
-│   ├── hooks/                         # validate-schema.py, pre-commit-seo-check.sh
-│   ├── references/                    # CWV thresholds, E-E-A-T, quality gates, schema types
-│   ├── schema/                        # JSON-LD templates
-│   └── pdf/                           # Google SEO reference
-│
-├── 42-seo-agi/                        # Elite SERP agent (most files)
-│   ├── SKILL.md, SPEC.md, README.md, CLAUDE.md
-│   ├── requirements.txt, .env.example
-│   ├── scripts/                       # research.py, gsc_pull.py, setup.py, lib/
-│   ├── tests/                         # test_dataforseo.py, test_env.py, etc.
-│   ├── fixtures/                      # Sample JSON data
-│   └── references/                    # Templates, checklists
-│
-├── 42-[skill-name]/                   # 50 more skill directories
-│   ├── SKILL.md                       # Skill definition (always present)
-│   └── scripts/                       # Python scripts (where applicable)
-│       └── [script].py
-│
-└── [52 skill directories total]
+└── skills/                            # All 54 skill directories
+    ├── 42-audit/                      # Orchestrator
+    │   ├── SKILL.md
+    │   ├── requirements.txt
+    │   ├── scripts/                   # fetch_page.py, parse_html.py, etc.
+    │   ├── references/                # CWV thresholds, E-E-A-T, quality gates
+    │   └── schema/                    # JSON-LD templates
+    │
+    ├── 42-seo-agi/                    # Elite SERP agent
+    │   ├── SKILL.md, SPEC.md, CLAUDE.md
+    │   ├── scripts/                   # research.py, gsc_pull.py, lib/
+    │   ├── tests/                     # test_dataforseo.py, test_env.py
+    │   └── references/                # Templates, checklists
+    │
+    └── 42-[skill-name]/              # 52 more skill directories
+        ├── SKILL.md                   # Skill definition (always present)
+        └── scripts/                   # Python scripts (where applicable)
 ```
 
 ---

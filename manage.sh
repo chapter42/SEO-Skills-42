@@ -3,6 +3,7 @@ set -euo pipefail
 
 # ─── Config ───────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_DIR="$SCRIPT_DIR/skills"
 SKILLS_TARGET="$HOME/.claude/skills"
 MANIFEST="$SCRIPT_DIR/.installed"
 
@@ -14,9 +15,9 @@ dim()    { printf '\033[2m%s\033[0m\n' "$*"; }
 
 die() { red "Error: $*" >&2; exit 1; }
 
-# Find all skill dirs (contain SKILL.md)
+# Find all skill dirs (contain SKILL.md) inside skills/
 find_skills() {
-  find "$SCRIPT_DIR" -maxdepth 2 -name "SKILL.md" -exec dirname {} \; | sort
+  find "$SKILLS_DIR" -maxdepth 2 -name "SKILL.md" -exec dirname {} \; | sort
 }
 
 # ─── Install ──────────────────────────────────────────────────────────

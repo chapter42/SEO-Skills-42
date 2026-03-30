@@ -2,7 +2,7 @@
 
 ## Wat is dit
 
-54 Claude Code skills voor SEO, GEO en content-analyse. Elke skill is een directory met een `SKILL.md` en optioneel Python scripts in `scripts/` en referentiedata in `references/`.
+54 Claude Code skills voor SEO, GEO en content-analyse in `skills/` subfolder. Elke skill is een directory met een `SKILL.md` en optioneel Python scripts in `scripts/` en referentiedata in `references/`.
 
 ## Installatie
 
@@ -19,8 +19,11 @@
 ### Symlinks ipv kopiëren
 Skills worden als symlinks in `~/.claude/skills/` geplaatst, niet gekopieerd. Wijzigingen in de repo zijn direct actief. Het `manage.sh` script houdt een `.installed` manifest bij voor clean uninstall.
 
+### Skills in subfolder
+Alle 54 skill directories zitten in `skills/`. Root bevat alleen `manage.sh`, `CLAUDE.md`, `README.md`, `requirements.txt`, `.env.example`, en `references/`.
+
 ### Shared references via symlinks
-Drie skills (`42-content`, `42-keyword-mapper`, `42-near-duplicates`) refereren naar `references/` maar hebben geen eigen references dir. Het install-script maakt automatisch symlinks aan: `42-content/references → ../../references/`. Skills met eigen references (42-audit, 42-genai-optimizer, 42-screaming-frog, 42-sentiment, 42-seo-agi) worden niet aangepast.
+Drie skills (`42-content`, `42-keyword-mapper`, `42-near-duplicates`) refereren naar `references/` maar hebben geen eigen references dir. Het install-script maakt automatisch symlinks aan: `skills/42-content/references → ../../references/`. Skills met eigen references (42-audit, 42-genai-optimizer, 42-screaming-frog, 42-sentiment, 42-seo-agi) worden niet aangepast.
 
 ### Eén embedding model
 Alle embeddings gebruiken Gemini `text-embedding-004`. Screaming Frog, keyword_embedder.py, en similarity.py moeten hetzelfde model gebruiken — anders zijn vectoren incompatibel.
