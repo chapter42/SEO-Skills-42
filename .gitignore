@@ -1,0 +1,21 @@
+# Internal working files — not for distribution
+TODO/
+NOSHARE/
+
+# API keys — NOOIT committen
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs en output
+*.log
+*.npz

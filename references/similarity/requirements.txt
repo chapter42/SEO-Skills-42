@@ -1,0 +1,6 @@
+# Core dependencies (always needed)
+numpy>=2.0.0        # Embedding vectors + matrix operations
+scipy>=1.14.0       # Efficient sparse matrix for large-scale similarity
+
+# Embedding provider (must match Screaming Frog config)
+google-generativeai>=0.8.0  # Gemini text-embedding-004
