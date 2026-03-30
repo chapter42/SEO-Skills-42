@@ -11,21 +11,31 @@ Alle skills oproepbaar met `42:` prefix. Dual-perspective: traditionele SEO (Goo
 git clone https://github.com/your-org/42-seo-skills.git
 cd 42-seo-skills
 
-# 2. API keys configureren
+# 2. Installeer skills in Claude Code
+./manage.sh install          # symlinks naar ~/.claude/skills/
+./manage.sh check --fix      # installeer Python dependencies
+
+# 3. API keys configureren
 cp .env.example .env
 # Vul GOOGLE_API_KEY en DATAFORSEO_LOGIN/PASSWORD in
 
-# 3. Python dependencies
-pip install -r requirements.txt
-
 # 4. Gebruik als Claude Code skills
-/42:audit https://example.com              # Volledige SEO + GEO audit
-/42:audit https://example.com --seo        # Alleen SEO
-/42:audit https://example.com --geo        # Alleen GEO (AI-zoekmachines)
-/42:technical https://example.com           # Technische audit
-/42:content https://example.com             # Content quality + E-E-A-T
-/42:striking-distance gsc-export.csv        # Quick wins op positie 4-20
-/42:page-health sf-internal.csv             # Per-URL gezondheidscore
+/42-audit https://example.com              # Volledige SEO + GEO audit
+/42-audit https://example.com --seo        # Alleen SEO
+/42-audit https://example.com --geo        # Alleen GEO (AI-zoekmachines)
+/42-technical https://example.com           # Technische audit
+/42-content https://example.com             # Content quality + E-E-A-T
+/42-striking-distance gsc-export.csv        # Quick wins op positie 4-20
+/42-page-health sf-internal.csv             # Per-URL gezondheidscore
+```
+
+### Beheer
+
+```bash
+./manage.sh install [--dry-run]  # Symlink skills naar ~/.claude/skills/
+./manage.sh uninstall            # Verwijder alle symlinks
+./manage.sh check [--fix]        # Check/installeer Python dependencies
+./manage.sh status               # Toon welke skills actief zijn
 ```
 
 ## Wat zit erin
@@ -273,6 +283,20 @@ Specialisten (48)       42:citability, 42:crawlers, 42:striking-distance, ...
 
 ## Changelog
 
+### v1.1.0 (2026-03-30)
+
+**Package management**
+
+- `manage.sh` — install/uninstall/status/check script voor skill lifecycle
+  - `install` symlinkt alle skills naar `~/.claude/skills/` met manifest tracking
+  - `uninstall` verwijdert clean via manifest (of fallback scan)
+  - `check` toont core + optional Python dependency status
+  - `check --fix` installeert ontbrekende core dependencies
+  - `install --dry-run` voor preview zonder wijzigingen
+- Automatische shared references: skills zonder eigen `references/` krijgen symlink naar root `references/`
+- `CLAUDE.md` met architectuurbeslissingen en conventies
+- `.installed` manifest in `.gitignore`
+
 ### v1.0.0 (2026-03-30)
 
 **Initial release — 54 skills**
@@ -320,6 +344,8 @@ Infrastructure:
 
 ```
 42-seo-skills/
+├── manage.sh                          # Install/uninstall/check script
+├── CLAUDE.md                          # Architectuur & conventies
 ├── README.md                          # This file
 ├── requirements.txt                   # Python dependencies
 ├── .env.example                       # API key template

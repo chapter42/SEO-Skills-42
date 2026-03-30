@@ -19,3 +19,6 @@ Thumbs.db
 # Logs en output
 *.log
 *.npz
+
+# manage.sh state
+.installed
