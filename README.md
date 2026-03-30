@@ -176,11 +176,24 @@ Optioneel:
 
 ### API Keys
 
-Kopieer `.env.example` naar `.env` en vul in:
+**Optie 1: `.env` bestand** (aanbevolen)
 
 ```bash
 cp .env.example .env
+# Vul je keys in
 ```
+
+**Optie 2: Shell environment** (handig voor CI of als je keys al elders beheert)
+
+```bash
+# Voeg toe aan ~/.zshrc of ~/.bashrc:
+export GOOGLE_API_KEY="je-google-api-key"
+export DATAFORSEO_LOGIN="je-login"
+export DATAFORSEO_PASSWORD="je-password"
+export GOOGLE_SERVICE_ACCOUNT_JSON="/pad/naar/service-account.json"
+```
+
+Shell-variabelen hebben voorrang boven `.env`. Alle Python scripts laden keys automatisch via `references/load_env.py`.
 
 | Key | Provider | Waarvoor | Kosten |
 |-----|----------|----------|--------|
@@ -188,8 +201,6 @@ cp .env.example .env
 | `DATAFORSEO_LOGIN` | [DataForSEO](https://dataforseo.com) | SERP data, keywords, backlinks | ~$0.01-0.05 per call |
 | `DATAFORSEO_PASSWORD` | DataForSEO | Idem | Idem |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | [Google Cloud Console](https://console.cloud.google.com/) | GSC data pull | Gratis |
-
-Alle API keys worden automatisch geladen via `references/load_env.py`. Keys in de shell-environment hebben voorrang boven `.env`.
 
 ### Screaming Frog
 
