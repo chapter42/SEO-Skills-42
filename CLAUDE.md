@@ -33,9 +33,11 @@ Alle embeddings gebruiken Gemini `text-embedding-004`. Screaming Frog, keyword_e
 
 ### Orchestrator hiërarchie
 ```
-42:seo-project  → lifecycle orchestrator (7 fasen, state over sessies)
+42:seo-project     → lifecycle orchestrator (7 fasen, state over sessies)
   ↓
-42:audit        → single-session audit orchestrator
+42:audit           → single-session audit orchestrator
+  ↓
+42:keyword-assign  → MECE keyword→URL mini-orchestrator (discovery → mapper → assign)
   ↓
 42:technical, 42:content, 42:structured-data, 42:geo-report  → geconsolideerd
   ↓

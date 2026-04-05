@@ -98,7 +98,8 @@ Skills die meerdere bronnen combineren met `--seo` / `--geo` mode flags.
 | [42:share-of-voice](42-share-of-voice/) | `/42:share-of-voice <rankings.csv>` | Competitieve SOV met 4 CTR-modellen. |
 | [42:meta-optimizer](42-meta-optimizer/) | `/42:meta-optimizer <url>` | AI meta descriptions: scoren (0-40), herschrijven, snippet generatie. |
 | [42:title-optimizer](42-title-optimizer/) | `/42:title-optimizer <url>` | Iteratieve title tag optimizer: 3 rondes, 7-dimensie scoring. |
-| [42:migration](42-migration/) | `/42:migration validate <spec.csv> <crawl.csv>` | Redirect validatie, content change detectie, Wayback Machine analyse. |
+| [42:migration](skills/42-migration/) | `/42:migration validate <spec.csv> <crawl.csv>` | Redirect validatie, content change detectie, Wayback Machine analyse. |
+| [42:keyword-assign](skills/42-keyword-assign/) | `/42-keyword-assign <sf.csv> <gsc.csv>` | MECE keyword→URL toewijzing. Mini-orchestrator: combineert discovery, mapper, clusters tot definitief {url: [keywords]} JSON. Conflict review. |
 
 ### Content Intelligence
 
@@ -292,6 +293,17 @@ Specialisten (48)       42:citability, 42:crawlers, 42:striking-distance, ...
 ---
 
 ## Changelog
+
+### v1.2.0 (2026-04-05)
+
+**Nieuwe skill: 42-keyword-assign**
+
+- MECE keyword→URL toewijzing met intent classificatie en conflict review
+- Mini-orchestrator: kan upstream skills (discovery, mapper, clusters) aanroepen
+- Produceert `keyword-assignments.json` met `{url: [keywords]}` formaat
+- Semi-automatische conflict resolutie met review tabel
+- Standalone Python script (`assign.py`) met CLI interface
+- Orphan detectie voor content gap identificatie
 
 ### v1.1.0 (2026-03-30)
 
