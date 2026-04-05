@@ -136,98 +136,109 @@ cmd_check() {
   fi
   green "✓ python3 → $python ($($python --version 2>&1))"
 
-  # Find pip
-  local pip
-  pip=$(command -v pip3 2>/dev/null || command -v pip 2>/dev/null || true)
-  if [ -z "$pip" ]; then
-    red "✗ pip not found"
-    return 1
-  fi
-
-  # Parse requirements.txt: core (uncommented) and optional (commented)
   local req_file="$SCRIPT_DIR/requirements.txt"
   if [ ! -f "$req_file" ]; then
     red "✗ requirements.txt not found"
     return 1
   fi
 
-  echo
-  echo "Core dependencies:"
-  local core_missing=()
-  local core_ok=0
+  # Single Python call checks all packages at once
+  local result
+  result=$($python -c "
+import importlib.metadata, re, sys
+
+# Read requirements.txt
+core, optional = [], []
+with open('$req_file') as f:
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith('#'):
+            # Extract commented package name
+            m = re.match(r'#\s*([a-zA-Z][a-zA-Z0-9_-]+)', line)
+            if m and m.group(1) not in ('Also', 'pip', 'Tip'):
+                optional.append(m.group(1))
+        elif not line.startswith('#'):
+            pkg = re.split(r'[><=!]', line)[0].strip()
+            if pkg:
+                core.append(pkg)
+
+installed = {d.metadata['Name'].lower(): d.version for d in importlib.metadata.distributions()}
+
+core_missing = 0
+print('SECTION:core')
+for pkg in core:
+    ver = installed.get(pkg.lower())
+    if ver:
+        print(f'OK:{pkg}:{ver}')
+    else:
+        print(f'MISS:{pkg}')
+        core_missing += 1
+
+opt_missing = 0
+print('SECTION:optional')
+for pkg in optional:
+    ver = installed.get(pkg.lower())
+    if ver:
+        print(f'OK:{pkg}:{ver}')
+    else:
+        print(f'MISS:{pkg}')
+        opt_missing += 1
+
+print(f'STATS:{core_missing}:{opt_missing}')
+" 2>/dev/null)
+
+  local core_missing_count=0
+  local opt_missing_count=0
+  local section=""
+
   while IFS= read -r line; do
-    # Skip empty lines and pure comments
-    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-    # Extract package name (before >= or any version spec)
-    local pkg
-    pkg=$(echo "$line" | sed 's/[><=!].*//' | xargs)
-    [ -z "$pkg" ] && continue
-
-    if $python -c "import importlib; importlib.import_module('${pkg//-/_}')" 2>/dev/null; then
-      local ver
-      ver=$($python -c "import importlib.metadata; print(importlib.metadata.version('$pkg'))" 2>/dev/null || echo "?")
-      green "  ✓ $pkg ($ver)"
-      core_ok=$((core_ok + 1))
-    else
-      red "  ✗ $pkg"
-      core_missing+=("$line")
-    fi
-  done < "$req_file"
-
-  echo
-  echo "Optional dependencies:"
-  local opt_missing=()
-  local opt_ok=0
-  while IFS= read -r line; do
-    # Only process commented-out packages (lines starting with #)
-    [[ "$line" =~ ^[[:space:]]*#[[:space:]]*([a-zA-Z][a-zA-Z0-9_-]*) ]] || continue
-    local pkg="${BASH_REMATCH[1]}"
-    # Skip lines that are just comments (no package-like pattern)
-    [[ "$pkg" == "Also" || "$pkg" == "pip" ]] && continue
-
-    local import_name="${pkg//-/_}"
-    if $python -c "import importlib; importlib.import_module('$import_name')" 2>/dev/null; then
-      local ver
-      ver=$($python -c "import importlib.metadata; print(importlib.metadata.version('$pkg'))" 2>/dev/null || echo "?")
-      green "  ✓ $pkg ($ver)"
-      opt_ok=$((opt_ok + 1))
-    else
-      dim "  ○ $pkg (not installed)"
-      # Extract the commented requirement line
-      local req
-      req=$(echo "$line" | sed 's/^[[:space:]]*#[[:space:]]*//' | sed 's/[[:space:]]*#.*//')
-      opt_missing+=("$req")
-    fi
-  done < "$req_file"
-
-  # Playwright special check
-  if $python -c "import playwright" 2>/dev/null; then
-    if command -v npx >/dev/null 2>&1 && npx playwright install --dry-run >/dev/null 2>&1; then
-      green "  ✓ playwright browsers"
-    else
-      yellow "  ⚠ playwright installed but browsers may need: playwright install"
-    fi
-  fi
-
-  # spaCy model check
-  if $python -c "import spacy" 2>/dev/null; then
-    if $python -c "import spacy; spacy.load('en_core_web_sm')" 2>/dev/null; then
-      green "  ✓ spacy en_core_web_sm model"
-    else
-      yellow "  ⚠ spacy installed but model missing: python -m spacy download en_core_web_sm"
-    fi
-  fi
+    case "$line" in
+      SECTION:core)
+        echo
+        echo "Core dependencies:"
+        section="core"
+        ;;
+      SECTION:optional)
+        echo
+        echo "Optional dependencies:"
+        section="optional"
+        ;;
+      OK:*)
+        local pkg ver
+        pkg=$(echo "$line" | cut -d: -f2)
+        ver=$(echo "$line" | cut -d: -f3)
+        green "  ✓ $pkg ($ver)"
+        ;;
+      MISS:*)
+        local pkg
+        pkg=$(echo "$line" | cut -d: -f2)
+        if [ "$section" = "core" ]; then
+          red "  ✗ $pkg"
+          core_missing_count=$((core_missing_count + 1))
+        else
+          dim "  ○ $pkg (not installed)"
+          opt_missing_count=$((opt_missing_count + 1))
+        fi
+        ;;
+      STATS:*)
+        core_missing_count=$(echo "$line" | cut -d: -f2)
+        opt_missing_count=$(echo "$line" | cut -d: -f3)
+        ;;
+    esac
+  done <<< "$result"
 
   # Summary
   echo
-  if [ ${#core_missing[@]} -eq 0 ]; then
+  if [ "$core_missing_count" -eq 0 ]; then
     green "✓ All core dependencies installed"
   else
-    red "✗ ${#core_missing[@]} core dependencies missing"
+    red "✗ $core_missing_count core dependencies missing"
     if $fix; then
       echo
       yellow "Installing core dependencies..."
-      $pip install -r "$req_file"
+      $python -m pip install -r "$req_file"
     else
       echo
       echo "Run to fix:"
@@ -237,8 +248,8 @@ cmd_check() {
     fi
   fi
 
-  if [ ${#opt_missing[@]} -gt 0 ]; then
-    dim "${#opt_missing[@]} optional packages not installed (install as needed)"
+  if [ "$opt_missing_count" -gt 0 ]; then
+    dim "$opt_missing_count optional packages not installed (install as needed)"
   fi
 }
 
